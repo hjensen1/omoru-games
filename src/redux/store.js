@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit"
 import peerjsMiddleware from "./peerjsMiddleware"
-import rootReducer from "../reducers/rootReducer"
+import rootReducer from "../rootReducer"
 
 export default configureStore({
   reducer: rootReducer,

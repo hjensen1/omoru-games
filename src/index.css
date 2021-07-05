@@ -7,4 +7,9 @@ body,
 
 @tailwind base;
 @tailwind components;
+
+.flex-center {
+  @apply flex items-center justify-center;
+}
+
 @tailwind utilities;

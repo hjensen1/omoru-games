@@ -1,11 +1,41 @@
 module.exports = {
-  purge: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
-  darkMode: false, // or 'media' or 'class'
+  purge: ["./src/**/*.js"],
   theme: {
+    fontFamily: {
+      sans: ["IBM Plex Sans", "sans-serif"],
+      mono: ["IBM Plex Mono", "monospace"],
+    },
+    fontSize: {
+      8: ["8px", { letterSpacing: "0.02em", lineHeight: "16px" }],
+      10: ["10px", { letterSpacing: "0.02em", lineHeight: "16px" }],
+      12: ["12px", { letterSpacing: "0.01em", lineHeight: "16px" }],
+      14: ["14px", { letterSpacing: "0.01em", lineHeight: "20px" }],
+      16: ["16px", { letterSpacing: "0em", lineHeight: "24px" }],
+      20: ["20px", { letterSpacing: "-0.02em", lineHeight: "32px" }],
+      24: ["24px", { letterSpacing: "-0.024em", lineHeight: "32px" }],
+      32: ["32px", { letterSpacing: "-0.032em", lineHeight: "40px" }],
+      40: ["40px", { letterSpacing: "-0.04em", lineHeight: "56px" }],
+      48: ["48px", { letterSpacing: "-0.04em", lineHeight: "64px" }],
+      56: ["56px", { letterSpacing: "-0.04em", lineHeight: "64px" }],
+      64: ["64px", { letterSpacing: "-0.04em", lineHeight: "80px" }],
+      72: ["72px", { letterSpacing: "-0.04em", lineHeight: "80px" }],
+      80: ["80px", { letterSpacing: "-0.04em", lineHeight: "80px" }],
+      96: ["96px", { letterSpacing: "-0.04em", lineHeight: "96px" }],
+    },
     extend: {},
   },
   variants: {
-    extend: {},
+    extend: {
+      textColor: ["active", "disabled", "group-hover"],
+      backgroundColor: ["active", "checked"],
+      visibility: ["group-hover"],
+      borderWidth: ["focus-within", "first", "last"],
+      borderStyle: ["focus-within"],
+      borderColor: ["checked"],
+      display: ["group-hover"],
+      opacity: ["disabled"],
+      backgroundOpacity: ["active"],
+      translate: ["group-hover"],
+    },
   },
-  plugins: [],
 }

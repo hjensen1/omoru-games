@@ -1,13 +1,14 @@
-import { useDispatch, useSelector } from "react-redux"
-import { incrementCounter } from "./reducers/connectionTestSlice"
+import { whichGame } from "./rootReducer"
+import Test from "./test/Test"
+import ConnectFour from "./connectFour/ConnectFour"
 
 export default function App() {
-  const dispatch = useDispatch()
-  const counter = useSelector((state) => state.connectionTest.counter)
-  return (
-    <div className="flex flex-col justify-center pt-64 w-full h-full bg-gray-500">
-      <div className="text-20 mb-4">{counter}</div>
-      <button onClick={() => dispatch(incrementCounter())}>Test</button>
-    </div>
-  )
+  let game
+  console.log(whichGame)
+  if (whichGame.startsWith("connectFour")) {
+    game = <ConnectFour />
+  } else {
+    game = <Test />
+  }
+  return <div className="flex-center w-full h-full bg-gray-500">{game}</div>
 }

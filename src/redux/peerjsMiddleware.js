@@ -9,7 +9,11 @@ if (!peerId) {
 }
 window.peerId = peerId
 
-let hostId = window.location.href.split("/").last
+let hostId = window.location.hash.slice(1)
+if (!hostId) {
+  window.location.hash = `#${peerId}`
+  hostId = peerId
+}
 window.hostId = hostId
 
 const peerjsMiddleware = (store) => (next) => (action) => {
