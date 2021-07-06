@@ -5,4 +5,7 @@ module.exports = {
       plugins: [require("tailwindcss"), require("autoprefixer")],
     },
   },
+  babel: {
+    plugins: ["@babel/plugin-proposal-logical-assignment-operators"],
+  },
 }
