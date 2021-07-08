@@ -52,7 +52,7 @@ function sendToHost(action) {
 function hostReceiveAction(action) {
   store.dispatch(action)
   Object.values(peer.connections).forEach((conn) => {
-    hostSendFullState(conn[0])
+    conn[0].send(JSON.stringify(action))
   })
 }
 
@@ -75,9 +75,9 @@ function hostSendFullState(conn) {
 let peer
 
 async function initializePeer() {
-  const servers = await fetch("https://omoru-stun-turn.herokuapp.com/", { method: "GET" }).then(
-    (response) => response.json(),
-  )
+  const servers = await fetch("https://omoru-stun-turn.herokuapp.com/", {
+    method: "GET",
+  }).then((response) => response.json())
   peer = new Peer(peerId, {
     debug: 2,
     config: {

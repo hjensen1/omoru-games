@@ -39,8 +39,8 @@ export function buildDeck(deckCount = 2) {
     }
   }
   for (let i = 0; i < deckCount; i++) {
-    deck.push("LX")
     deck.push("BX")
+    deck.push("RX")
   }
 
   return shuffle(deck)
@@ -81,8 +81,8 @@ export function buildCardOrder(trump) {
   const maxOrder = Math.max(...Object.values(order))
   suits.forEach((suit) => (order[suit + trumpRank] = maxOrder + 1))
   order[trumpSuit + trumpRank] = maxOrder + 2
-  order["LX"] = maxOrder + 3
-  order["BX"] = maxOrder + 4
+  order["BX"] = maxOrder + 3
+  order["RX"] = maxOrder + 4
   return order
 }
 
