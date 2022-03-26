@@ -77,7 +77,11 @@ let peer
 async function initializePeer() {
   const servers = await fetch("https://omoru-stun-turn.herokuapp.com/", {
     method: "GET",
-  }).then((response) => response.json())
+  }).then((response) => {
+    console.log(response)
+    return response.json()
+  })
+  console.log(servers)
   peer = new Peer(peerId, {
     debug: 2,
     config: {
