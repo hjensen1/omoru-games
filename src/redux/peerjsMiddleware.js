@@ -68,7 +68,7 @@ function hostSendFullState(conn) {
       type: "setFullState",
       peerjs: { actionId: uuid(), peerId },
       payload: store.getState(),
-    }),
+    })
   )
 }
 

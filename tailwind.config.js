@@ -1,9 +1,20 @@
+const colors = require("tailwindcss/colors")
+
 module.exports = {
-  purge: ["./src/**/*.js"],
+  content: ["./index.html", "./src/**/*.jsx"],
   theme: {
     fontFamily: {
       sans: ["IBM Plex Sans", "sans-serif"],
       mono: ["IBM Plex Mono", "monospace"],
+      emoji: [
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "NotoColorEmoji",
+        "Noto Color Emoji",
+        "Segoe UI Symbol",
+        "Android Emoji",
+        "EmojiSymbols",
+      ],
     },
     fontSize: {
       8: ["8px", { letterSpacing: "0.02em", lineHeight: "16px" }],
@@ -22,20 +33,23 @@ module.exports = {
       80: ["80px", { letterSpacing: "-0.04em", lineHeight: "80px" }],
       96: ["96px", { letterSpacing: "-0.04em", lineHeight: "96px" }],
     },
-    extend: {},
-  },
-  variants: {
     extend: {
-      textColor: ["active", "disabled", "group-hover"],
-      backgroundColor: ["active", "checked"],
-      visibility: ["group-hover"],
-      borderWidth: ["focus-within", "first", "last"],
-      borderStyle: ["focus-within"],
-      borderColor: ["checked"],
-      display: ["group-hover"],
-      opacity: ["disabled"],
-      backgroundOpacity: ["active"],
-      translate: ["group-hover"],
+      colors: {
+        gray: colors.neutral,
+        darkBlue: {
+          100: "#203880",
+          200: "#203776",
+          300: "#21346B",
+          400: "#213162",
+          500: "#233059",
+          600: "#242E4E",
+          700: "#1D2B52",
+          800: "#18213A",
+          900: "#262831",
+        },
+        "gray-750": "#303030",
+      },
     },
   },
+  plugins: [],
 }
