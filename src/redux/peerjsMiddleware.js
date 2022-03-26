@@ -83,6 +83,9 @@ async function initializePeer() {
   })
   console.log(servers)
   peer = new Peer(peerId, {
+    host: "omoru-peerjs-server.herokuapp.com",
+    port: 443,
+    secure: true,
     debug: 2,
     config: {
       iceServers: servers,
