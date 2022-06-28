@@ -26,15 +26,15 @@ function sendToHost({ type, payload }) {
   }
 }
 
-let isReceived = false
+let actionSource = null
 
 function hostReceiveAction({ type, payload, peerjs }) {
   try {
-    isReceived = true
-    actionDirectory[type](payload)
+    actionSource = peerjs.peerId
+    actionDirectory[type](...payload)
     sendToClients({ type, payload, peerjs })
   } finally {
-    isReceived = false
+    actionSource = null
   }
 }
 
@@ -47,11 +47,11 @@ function sendToClients({ type, payload, peerjs = { actionId: uuid(), peerId } })
 
 function clientReceiveAction({ type, payload, peerjs }) {
   try {
-    isReceived = true
-    console.log("clientReceiveAction", type)
-    actionDirectory[type](payload)
+    actionSource = peerjs.peerId
+    console.log("clientReceiveAction", type, payload)
+    actionDirectory[type](...payload)
   } finally {
-    isReceived = false
+    actionSource = null
   }
 }
 
@@ -61,7 +61,7 @@ function hostSendFullState(conn) {
     JSON.stringify({
       type: "setFullState",
       peerjs: { actionId: uuid(), peerId },
-      payload: store.getState(),
+      payload: [store.getState()],
     })
   )
 }
@@ -127,7 +127,20 @@ initializePeer()
 
 // Redux Stuff
 
-const initialState = { connectionTest: { counter: 0 } }
+const initialState = {
+  players: [],
+  teams: [[], []],
+  wordList: [],
+  cluegivers: [null, null],
+  words: [null, null],
+  rounds: [],
+  score: [
+    { interceptions: 0, misscommunications: 0 },
+    { interceptions: 0, misscommunications: 0 },
+  ],
+  errors: {},
+  suggestions: {},
+}
 
 function rootReducer(state, action) {
   return state ? action.payload : initialState
@@ -164,25 +177,27 @@ export function enhance(actionFunction) {
       } finally {
         depth--
       }
-    } else if (!isReceived && peerId !== hostId) {
+    } else if (!actionSource && peerId !== hostId) {
       sendToHost({ type: actionFunction.name, payload: params })
       console.log(`Sent ${actionFunction.name} to host`)
     } else {
       console.log(actionFunction.name)
       try {
+        if (!actionSource) actionSource = peerId
         const result = produce(getStore(), (draftState) => {
           state = draftState
           actionFunction(...params)
         })
         store.dispatch({ type: actionFunction.name, payload: result })
 
-        if (peerId === hostId && !isReceived) {
+        if (peerId === hostId && actionSource === hostId) {
           sendToClients({ type: actionFunction.name, payload: params })
         }
       } catch (e) {
         throw e
       } finally {
         state = null
+        actionSource = null
         console.log(`${actionFunction.name} - ${new Date() - t}ms`)
       }
     }

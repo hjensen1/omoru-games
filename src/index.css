@@ -1,38 +1,49 @@
 /* ./src/index.css */
 html {
-  background: #262626;
+  @apply bg-gray-800;
 }
 
 @tailwind base;
 @tailwind components;
-
-.rhap_container {
-  box-shadow: none;
-  background: #1d2b52;
-}
-
-.rhap_time {
-  color: #cbd5e1;
-}
 
 button:focus {
   outline: none;
 }
 
 .btn {
-  @apply flex items-center justify-center whitespace-nowrap text-14 font-medium px-3 h-7 rounded border border-blue-500 text-gray-400 bg-transparent;
+  @apply flex items-center justify-center whitespace-nowrap text-14 font-bold px-3 h-7 rounded bg-blue-700 text-gray-300 bg-opacity-70;
 }
 
 .btn:hover {
-  @apply border-blue-400 text-gray-300;
+  @apply bg-blue-800 bg-opacity-70 text-gray-300;
 }
 
 .btn:active {
-  @apply border-blue-500 text-gray-400;
+  @apply bg-blue-700 bg-opacity-70 text-gray-300;
 }
 
 .btn:disabled {
-  @apply border-gray-400 text-gray-400;
+  @apply bg-gray-500 bg-opacity-70 text-gray-400;
+}
+
+.btn-red {
+  @apply bg-red-700 bg-opacity-70;
+}
+
+.btn-red:hover {
+  @apply bg-red-800 bg-opacity-70;
+}
+
+.btn-red:active {
+  @apply bg-red-700 bg-opacity-70;
+}
+
+.panel-blue {
+  @apply bg-gray-900 bg-opacity-50 border-opacity-50 p-4 rounded border-4 text-blue-500 border-blue-900;
+}
+
+.panel-red {
+  @apply bg-gray-900 bg-opacity-50 border-opacity-50 p-4 rounded border-4 text-red-500 border-red-900;
 }
 
 .text-btn {
@@ -47,28 +58,12 @@ button:focus {
   @apply underline text-gray-300;
 }
 
-.song-field {
-  @apply font-medium text-left text-gray-400 text-14;
-}
-
-.song-tag {
-  @apply flex items-center h-6 px-1 text-14 font-medium min-w-0 max-w-full bg-gray-300 bg-opacity-10 border border-gray-500 text-gray-400 rounded;
-}
-
-.song-tag:focus {
-  @apply outline-none;
-}
-
-.song-tag-btn:hover {
-  @apply text-gray-300 border-gray-400;
-}
-
 .input-container {
-  @apply flex items-center h-7 px-2 bg-gray-700 border border-gray-400 overflow-hidden;
+  @apply flex items-center h-7 px-2 bg-gray-750 border border-gray-500 overflow-hidden;
 }
 
 .input-container:focus-within {
-  @apply border-gray-300;
+  @apply border-gray-400;
 }
 
 .input {
@@ -79,12 +74,8 @@ button:focus {
   @apply outline-none;
 }
 
-.playlist {
-  @apply px-3 py-2 bg-gray-800 border rounded border-gray-600;
-}
-
-.notification {
-  @apply px-3 py-2 mt-2 border rounded text-14 font-medium bg-gray-900 transition-opacity ease-in duration-150;
+.flex-center {
+  @apply flex items-center justify-center;
 }
 
 @tailwind utilities;
