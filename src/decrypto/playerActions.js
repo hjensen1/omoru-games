@@ -1,0 +1,35 @@
+import { enhance, state } from "../redux/redux2"
+
+export const doSubmitClues = enhance(function submitClues(clues, team) {
+  const round = state.rounds[team].last
+  if (round.cluesSubmitted) return
+
+  round.clues = clues
+  round.cluesSubmitted = true
+})
+
+export const doSetGuesses = enhance(function setGuesses({ theirs, ours }, team) {
+  const round = state.rounds[team].last
+  if (!round.theirsSubmitted) {
+    round.theirs = theirs
+  }
+  if (!round.oursSubmitted) {
+    round.ours = ours
+  }
+})
+
+export const doIncrementGuess = enhance(function incrementGuess(key, index, team) {
+  const round = state.rounds[team].last
+  if (round[`${key}Submitted`]) return
+  round[key][index] = (round[key][index] % 4) + 1
+})
+
+export const doSubmitTheirs = enhance(function submitTheirs(team) {
+  const round = state.rounds[team].last
+  round.theirsSubmitted = true
+})
+
+export const doSubmitOurs = enhance(function submitOurs(team) {
+  const round = state.rounds[team].last
+  round.oursSubmitted = true
+})

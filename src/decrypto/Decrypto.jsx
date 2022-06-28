@@ -1,11 +1,16 @@
 import { useState } from "react"
 import { useSelector } from "react-redux"
-import { joinGame, joinTeam, otherTeam } from "./decryptoSlice"
 import GameBoard from "./GameBoard"
+import { joinGame, joinTeam, otherTeam } from "./gameMeta"
+import { startGame } from "./gameSetup"
+import TurnEnder from "./TurnEnder"
 
 export default function Decrypto() {
   const players = useSelector((state) => state.players)
   const self = players.find((p) => p.id === window.peerId)
+  const canStartGame = useSelector(
+    (state) => state.rounds[0].length === 0 && state.teams[0].length >= 1 && state.teams[1].length >= 1
+  )
 
   if (!self) {
     return <JoinGame />
@@ -14,9 +19,17 @@ export default function Decrypto() {
     return <JoinTeam />
   }
   return (
-    <div className="flex justify-center p-8 space-x-8">
-      <GameBoard team={self.team} self={self} />
-      <GameBoard team={otherTeam(self.team)} self={self} />
+    <div className="flex flex-col items-center">
+      {window.hostId === window.peerId && canStartGame && (
+        <button className="btn flex-0 w-32 mt-6" onClick={startGame}>
+          Start Game
+        </button>
+      )}
+      <div className="flex justify-center p-8 space-x-8">
+        <GameBoard team={self.team} self={self} />
+        <GameBoard team={otherTeam(self.team)} self={self} />
+      </div>
+      <TurnEnder />
     </div>
   )
 }

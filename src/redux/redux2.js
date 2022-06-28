@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit"
 import produce from "immer"
 import Peer from "peerjs"
 import { v4 as uuid } from "uuid"
+import { initialState } from "../decrypto/decryptoSlice"
 
 let peerId = window.localStorage.getItem("peerId")
 if (!peerId) {
@@ -127,21 +128,6 @@ initializePeer()
 
 // Redux Stuff
 
-const initialState = {
-  players: [],
-  teams: [[], []],
-  wordList: [],
-  cluegivers: [null, null],
-  words: [null, null],
-  rounds: [],
-  score: [
-    { interceptions: 0, misscommunications: 0 },
-    { interceptions: 0, misscommunications: 0 },
-  ],
-  errors: {},
-  suggestions: {},
-}
-
 function rootReducer(state, action) {
   return state ? action.payload : initialState
 }
@@ -184,7 +170,7 @@ export function enhance(actionFunction) {
       console.log(actionFunction.name)
       try {
         if (!actionSource) actionSource = peerId
-        const result = produce(getStore(), (draftState) => {
+        const result = produce(getState(), (draftState) => {
           state = draftState
           actionFunction(...params)
         })
@@ -208,7 +194,7 @@ export function enhance(actionFunction) {
   return result
 }
 
-const doSetFullState = enhance(function setFullState(fullState) {
+export const doSetFullState = enhance(function setFullState(fullState) {
   console.log(fullState)
   for (const key in fullState) {
     state[key] = fullState[key]
@@ -217,6 +203,6 @@ const doSetFullState = enhance(function setFullState(fullState) {
 
 actionDirectory.setFullState = doSetFullState
 
-export function getStore() {
+export function getState() {
   return store.getState()
 }
