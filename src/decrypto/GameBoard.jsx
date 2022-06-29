@@ -5,6 +5,8 @@ import { useState } from "react"
 import { useSelector } from "react-redux"
 import { joinTeam } from "./gameMeta"
 import { doIncrementGuess, doSetGuesses, doSubmitClues, doSubmitOurs, doSubmitTheirs } from "./playerActions"
+import CheckIcon from "../images/check.svg?component"
+import XIcon from "../images/close.svg?component"
 
 const GameBoardContext = createContext({})
 function useGameBoardContext() {
@@ -30,8 +32,8 @@ export default function GameBoard({ team, self }) {
             <Words />
             <ClueHistory />
             <RoundHistory />
-            <ClueInputs key={roundNum} />
-            <GuessInputs key={roundNum} />
+            <ClueInputs key={`ClueInputs${roundNum}`} />
+            <GuessInputs key={`GuessInputs${roundNum}`} />
           </>
         )}
       </div>
@@ -52,12 +54,14 @@ function TeamMembers() {
       <div className="flex justify-between items-center">
         <div className="mb-1 text-20 font-medium">{team === 0 ? "Blue Team" : "Red Team"}</div>
         {gameStarted ? (
-          <div className="flex space-x-8">
-            <div className="text-16 opacity-80">
-              Interceptions: <span className="opacity-100 font-bold">{score.interceptions}</span>
+          <div className="flex flex-col items-start">
+            <div className="flex-center text-16 opacity-80">
+              <CheckIcon className="fill-current h-5 w-5 p-0.5 mr-1" />
+              Interceptions: <span className="opacity-100 font-bold ml-0.5">{score.interceptions}</span>
             </div>
-            <div className="text-16 opacity-80">
-              Miscommunications: <span className="opacity-100 font-bold">{score.miscommunications}</span>
+            <div className="flex-center text-16 opacity-80">
+              <XIcon className="fill-current h-5 w-5 mr-1" />
+              Miscommunications: <span className="opacity-100 font-bold ml-0.5">{score.miscommunications}</span>
             </div>
           </div>
         ) : (
@@ -85,6 +89,8 @@ const otherTeamWords = ["????", "????", "????", "????"]
 function Words() {
   const { team, self } = useGameBoardContext()
   const words = useSelector((state) => state.words[team])
+  const gameStarted = useSelector((state) => !!state.rounds[0][0])
+  if (!gameStarted) return null
 
   return (
     <div
@@ -137,7 +143,7 @@ function ClueInputs() {
                 value={clues[i]}
                 onChange={(e) => {
                   const a = [...clues]
-                  a[i] = e.target.value
+                  a[i] = e.target.value.toUpperCase()
                   setClues(a)
                 }}
               />
@@ -157,6 +163,7 @@ function ClueInputs() {
 function GuessInputs() {
   const { team, self } = useGameBoardContext()
   const round = useSelector((state) => state.rounds[team].last)
+  const playerCount = useSelector((state) => state.players.length)
   if (!round || !round.cluesSubmitted) return null
   if (self.team !== team && round.roundNum === 1) return null
 
@@ -165,7 +172,7 @@ function GuessInputs() {
   const submit = self.team === team ? doSubmitOurs : doSubmitTheirs
   const isSubmitted = self.team === team ? round.oursSubmitted : round.theirsSubmitted
   const guesses = round[key]
-  const disabled = round.cluegiver === self.id
+  const disabled = round.cluegiver === self.id && playerCount > 2
 
   return (
     <div>
@@ -226,7 +233,7 @@ function RoundHistory() {
   const rounds = useSelector((state) => state.rounds[team])
   const completedRounds = rounds.filter((round) => round.theirsRevealed)
   const lastRound = completedRounds.pop()
-  const [expanded, setExpanded] = useState(true)
+  const [expanded, setExpanded] = useState(false)
 
   if (!lastRound) return null
   return (
@@ -260,10 +267,22 @@ function Round({ round }) {
         {[0, 1, 2].map((i) => (
           <div className="flex" key={i}>
             <div className="flex-1 font-medium text-18 text-gray-300 h-6 bg-gray-750 mr-4 px-2">{clues[i]}</div>
-            <div className={clsx("border w-6 h-6 flex-center mr-1", `border-${theirColor}-700 text-${theirColor}-500`)}>
+            <div
+              className={clsx(
+                "w-6 h-6 flex-center mr-1",
+                `border-${theirColor}-700 text-${theirColor}-500`,
+                theirs[i] === correct[i] ? "border-2" : "border"
+              )}
+            >
               {theirsRevealed && <span className="">{theirs[i]}</span>}
             </div>
-            <div className={clsx("border w-6 h-6 flex-center mr-1", `border-${ourColor}-700 text-${ourColor}-500`)}>
+            <div
+              className={clsx(
+                "w-6 h-6 flex-center mr-1",
+                `border-${ourColor}-700 text-${ourColor}-500`,
+                ours[i] === correct[i] ? "border-2" : "border"
+              )}
+            >
               {oursRevealed && <span className="">{ours[i]}</span>}
             </div>
             <div className={clsx("border w-6 h-6 flex-center", `border-gray-600 text-gray-300`)}>
@@ -280,25 +299,44 @@ function ClueHistory() {
   const { team, self } = useGameBoardContext()
   const rounds = useSelector((state) => state.rounds[team])
   const completedRounds = rounds.filter((round) => round.correctRevealed)
-  const clues = { 1: [], 2: [], 3: [], 4: [] }
-  for (const round of completedRounds) {
-    ;[0, 1, 2].forEach((i) => clues[round.correct[i]].push(round.clues[i]))
-  }
+
+  if (completedRounds.length === 0) return null
+
+  return (
+    <div className={clsx("p-0", team === 0 ? "panel-blue" : "panel-red")}>
+      {completedRounds.map((round, i) => (
+        <ClueHistoryRow
+          key={i}
+          round={round}
+          className={clsx(i === 0 ? "pt-3" : "pt-1.5", i === completedRounds.length - 1 && "pb-3")}
+        />
+      ))}
+    </div>
+  )
+}
+
+function ClueHistoryRow({ round, className }) {
+  const { team, self } = useGameBoardContext()
+  const clues = [null, null, null, null]
+  round.correct.forEach((number, i) => (clues[number - 1] = round.clues[i]))
+  const ours = [null, null, null, null]
+  round.ours.forEach((number, i) => (ours[number - 1] = round.clues[i]))
 
   return (
     <div
-      className={clsx(
-        "flex flex-1 divide-x-4 divide-opacity-50 p-0",
-        team === 0 ? "panel-blue divide-blue-900" : "panel-red divide-red-900"
-      )}
+      className={clsx("flex flex-1 divide-x-4 divide-opacity-50", team === 0 ? "divide-blue-900" : "divide-red-900")}
     >
-      {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="flex flex-col items-center w-1/4 py-4 px-2">
-          {clues[i].map((clue, j) => (
-            <div key={j} className="text-14 text-gray-400 font-medium">
-              {clue}
-            </div>
-          ))}
+      {[0, 1, 2, 3].map((i) => (
+        <div key={i} className={clsx(className, "flex-center w-1/4 px-1")}>
+          <div
+            className={clsx(
+              "text-14 text-gray-400 font-medium text-center",
+              self.team !== team && clues[i] !== ours[i] && "italic"
+            )}
+            style={{ lineHeight: "16px" }}
+          >
+            {clues[i]}
+          </div>
         </div>
       ))}
     </div>

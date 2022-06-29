@@ -78,4 +78,12 @@ button:focus {
   @apply flex items-center justify-center;
 }
 
+.guess-box {
+  @apply border w-6 h-6 flex-center;
+}
+
+.guess-box-correct {
+  @apply border-2 w-6 h-6 flex-center;
+}
+
 @tailwind utilities;

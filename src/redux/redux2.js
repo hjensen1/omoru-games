@@ -49,7 +49,7 @@ function sendToClients({ type, payload, peerjs = { actionId: uuid(), peerId } })
 function clientReceiveAction({ type, payload, peerjs }) {
   try {
     actionSource = peerjs.peerId
-    console.log("clientReceiveAction", type, payload)
+    // console.log("clientReceiveAction", type, payload)
     actionDirectory[type](...payload)
   } finally {
     actionSource = null
@@ -57,7 +57,7 @@ function clientReceiveAction({ type, payload, peerjs }) {
 }
 
 function hostSendFullState(conn) {
-  console.log("hostSendFullState", store.getState())
+  // console.log("hostSendFullState", store.getState())
   conn.send(
     JSON.stringify({
       type: "setFullState",
@@ -197,7 +197,7 @@ export function enhance(name, actionFunction) {
 }
 
 export const doSetFullState = enhance("setFullState", function setFullState(fullState) {
-  console.log(fullState)
+  // console.log(fullState)
   for (const key in fullState) {
     state[key] = fullState[key]
   }

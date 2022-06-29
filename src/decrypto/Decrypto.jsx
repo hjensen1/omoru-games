@@ -38,7 +38,7 @@ function JoinGame() {
   const [name, setName] = useState("")
 
   return (
-    <div className="flex justify-center items-center h-full w-full space-x-4">
+    <div className="flex justify-center items-center h-full w-full space-x-4 mt-8">
       <div className="input-container">
         <input className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your name" />
       </div>
