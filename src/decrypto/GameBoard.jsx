@@ -266,7 +266,7 @@ function Round({ round }) {
       <div className="flex-1 space-y-1">
         {[0, 1, 2].map((i) => (
           <div className="flex" key={i}>
-            <div className="flex-1 font-medium text-18 text-gray-300 h-6 bg-gray-750 mr-4 px-2">{clues[i]}</div>
+            <div className="flex-1 font-medium text-18 text-gray-400 h-6 bg-gray-750 mr-4 px-2">{clues[i]}</div>
             <div
               className={clsx(
                 "w-6 h-6 flex-center mr-1",
