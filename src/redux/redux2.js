@@ -41,8 +41,8 @@ function hostReceiveAction({ type, payload, peerjs }) {
 
 function sendToClients({ type, payload, peerjs = { actionId: uuid(), peerId } }) {
   Object.values(peer.connections).forEach((conn) => {
-    console.log("send", conn)
-    conn[0].send(JSON.stringify({ type, payload, peerjs }))
+    // console.log("send", conn)
+    if (conn[0]) conn[0].send(JSON.stringify({ type, payload, peerjs }))
   })
 }
 
@@ -152,49 +152,51 @@ let depth = 0
 
 const actionDirectory = {}
 
-export function enhance(actionFunction) {
+export function enhance(name, actionFunction) {
   const result = (...params) => {
     const t = new Date()
     if (state) {
       depth++
       try {
         actionFunction(...params)
-        console.log(`${"".padStart(depth * 4, " ")}${actionFunction.name} - ${new Date() - t}ms`)
+        console.log(name)
+        // console.log(`${"".padStart(depth * 4, " ")}${name} - ${new Date() - t}ms`)
       } finally {
         depth--
       }
     } else if (!actionSource && peerId !== hostId) {
-      sendToHost({ type: actionFunction.name, payload: params })
-      console.log(`Sent ${actionFunction.name} to host`)
+      sendToHost({ type: name, payload: params })
+      // console.log(`Sent ${name} to host`)
     } else {
-      console.log(actionFunction.name)
+      // console.log(name)
       try {
         if (!actionSource) actionSource = peerId
         const result = produce(getState(), (draftState) => {
           state = draftState
           actionFunction(...params)
+          console.log(name)
         })
-        store.dispatch({ type: actionFunction.name, payload: result })
+        store.dispatch({ type: name, payload: result })
 
         if (peerId === hostId && actionSource === hostId) {
-          sendToClients({ type: actionFunction.name, payload: params })
+          sendToClients({ type: name, payload: params })
         }
       } catch (e) {
         throw e
       } finally {
         state = null
         actionSource = null
-        console.log(`${actionFunction.name} - ${new Date() - t}ms`)
+        // console.log(`${name} - ${new Date() - t}ms`)
       }
     }
   }
 
-  actionDirectory[actionFunction.name] = result
+  actionDirectory[name] = result
 
   return result
 }
 
-export const doSetFullState = enhance(function setFullState(fullState) {
+export const doSetFullState = enhance("setFullState", function setFullState(fullState) {
   console.log(fullState)
   for (const key in fullState) {
     state[key] = fullState[key]

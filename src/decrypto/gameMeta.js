@@ -8,7 +8,7 @@ export function joinGame(name) {
   doAddPlayer(window.peerId, name)
 }
 
-const doAddPlayer = enhance(function addPlayer(id, name) {
+const doAddPlayer = enhance("addPlayer", function addPlayer(id, name) {
   if (!state.players.find((p) => p.id === id)) {
     state.players.push({ id, name })
     state.errors[id] = []
@@ -19,7 +19,7 @@ export function joinTeam(team) {
   doAddToTeam(window.peerId, team)
 }
 
-const doAddToTeam = enhance(function addToTeam(id, team) {
+const doAddToTeam = enhance("addToTeam", function addToTeam(id, team) {
   if (state.teams[team].includes(id)) return
 
   const other = state.teams[otherTeam(team)]

@@ -15,9 +15,9 @@ export default function Decrypto() {
   if (!self) {
     return <JoinGame />
   }
-  if (self.team == null) {
-    return <JoinTeam />
-  }
+  // if (self.team == null) {
+  //   return <JoinTeam />
+  // }
   return (
     <div className="flex flex-col items-center">
       {window.hostId === window.peerId && canStartGame && (
@@ -26,8 +26,8 @@ export default function Decrypto() {
         </button>
       )}
       <div className="flex justify-center p-8 space-x-8">
-        <GameBoard team={self.team} self={self} />
-        <GameBoard team={otherTeam(self.team)} self={self} />
+        <GameBoard team={0} self={self} />
+        <GameBoard team={1} self={self} />
       </div>
       <TurnEnder />
     </div>
