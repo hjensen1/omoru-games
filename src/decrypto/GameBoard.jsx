@@ -34,6 +34,7 @@ export default function GameBoard({ team, self }) {
             <RoundHistory />
             <ClueInputs key={`ClueInputs${roundNum}`} />
             <GuessInputs key={`GuessInputs${roundNum}`} />
+            <OtherTeamGuessStatus key={`OtherTeamGuessStatus${roundNum}`} />
           </>
         )}
       </div>
@@ -53,7 +54,7 @@ function TeamMembers() {
     <div className={clsx("w-[40rem] ", team === 0 ? "panel-blue" : "panel-red")}>
       <div className="flex justify-between items-center">
         <div className="mb-1 text-20 font-medium">{team === 0 ? "Blue Team" : "Red Team"}</div>
-        {gameStarted ? (
+        {gameStarted && self.team != null ? (
           <div className="flex flex-col items-start">
             <div className="flex-center text-16 opacity-80">
               <CheckIcon className="fill-current h-5 w-5 p-0.5 mr-1" />
@@ -120,7 +121,7 @@ function ClueInputs() {
   if (round.cluegiver !== self.id) {
     const cluegiver = players.find((player) => player.id === round.cluegiver)
     return (
-      <div className="mb-2 font-medium text-20 text-gray-300">
+      <div className="mb-2 ml-1 font-medium text-20 text-gray-300">
         <span className="font-bold">{cluegiver.name}</span> is giving clues
       </div>
     )
@@ -130,7 +131,7 @@ function ClueInputs() {
 
   return (
     <div>
-      <div className="mb-2 font-medium text-20 text-gray-300">It's your turn to give clues!</div>
+      <div className="mb-2 ml-1 font-medium text-20 text-gray-300">It's your turn to give clues!</div>
       <div className={clsx("p-4 pb-2 space-y-2", team === 0 ? "panel-blue" : "panel-red")}>
         {correct.map((number, i) => (
           <div key={i} className="flex items-center">
@@ -172,16 +173,16 @@ function GuessInputs() {
   const submit = self.team === team ? doSubmitOurs : doSubmitTheirs
   const isSubmitted = self.team === team ? round.oursSubmitted : round.theirsSubmitted
   const guesses = round[key]
-  const disabled = round.cluegiver === self.id && playerCount > 2
+  const disabled = round.cluegiver === self.id && round.turnOrder.length > 1
 
   return (
     <div>
       {isSubmitted ? (
-        <div className="mb-2 font-medium text-20 text-gray-300">Clues submitted!</div>
+        <div className="mb-2 ml-1 font-medium text-20 text-gray-300">Guesses submitted!</div>
       ) : disabled ? (
-        <div className="mb-2 font-medium text-20 text-gray-300">Your team is guessing your clues...</div>
+        <div className="mb-2 ml-1 font-medium text-20 text-gray-300">Your team is guessing your clues...</div>
       ) : (
-        <div className="mb-2 font-medium text-20 text-gray-300">
+        <div className="mb-2 ml-1 font-medium text-20 text-gray-300">
           Guess {team === self.team ? "your team's" : "the opposing team's"} clues!
         </div>
       )}
@@ -341,4 +342,24 @@ function ClueHistoryRow({ round, className }) {
       ))}
     </div>
   )
+}
+
+function OtherTeamGuessStatus() {
+  const { team, self } = useGameBoardContext()
+  const otherTeam = (self.team + 1) % 2
+  const ourRound = useSelector((state) => state.rounds[self.team].last)
+  const theirRound = useSelector((state) => state.rounds[otherTeam].last)
+
+  let text
+  if (!ourRound) {
+    return null
+  } else if (team === otherTeam && theirRound.oursSubmitted) {
+    text = "The opposing team has guessed their clues"
+  } else if (team == self.team && ourRound.theirsSubmitted && ourRound.roundNum > 1) {
+    text = "The opposing team has guessed your clues"
+  } else {
+    return null
+  }
+
+  return <div className="text-18 ml-1 font-medium text-gray-400">{text}</div>
 }

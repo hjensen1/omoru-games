@@ -9,14 +9,18 @@ import { wordList } from "./wordList"
 
 export function generateRound(rounds, players, team, corrects) {
   let roundNum = 1
+  let turnOrder = [...players]
   if (rounds.length > 0) {
     team = rounds.last.team
     roundNum = rounds.length + 1
+    turnOrder = [...rounds.last.turnOrder]
   }
+  turnOrder.push(turnOrder.shift())
   return {
     roundNum,
     team,
-    cluegiver: players[(roundNum - 1) % players.length],
+    cluegiver: turnOrder.last,
+    turnOrder,
     correct: corrects.pop(),
     clues: ["", "", ""],
     theirs: roundNum === 1 ? [null, null, null] : [1, 2, 3],
@@ -45,7 +49,7 @@ actions.doStartGame = function () {
   // setup in host then send full state to clients.
   if (peerId !== hostId) return
 
-  const shuffled = shuffle(wordList)
+  const shuffled = shuffle(wordListPlusPlayerNames(state.players))
   state.teams[0] = shuffle(state.teams[0])
   state.teams[1] = shuffle(state.teams[1])
   state.words[0] = shuffled.slice(0, 4)
@@ -122,7 +126,8 @@ actions.doScoreRound = function scoreRound(team) {
   const round = state.rounds[team].last
   if (JSON.stringify(round.theirs) === JSON.stringify(round.correct)) {
     state.score[otherTeam(team)].interceptions += 1
-  } else if (JSON.stringify(round.ours) !== JSON.stringify(round.correct)) {
+  }
+  if (JSON.stringify(round.ours) !== JSON.stringify(round.correct)) {
     state.score[team].miscommunications += 1
   }
 }
@@ -135,6 +140,13 @@ function isGameOver(state) {
     state.score[1].miscommunications >= 2 ||
     (state.rounds[1].length === 8 && state.rounds[1].last.correctRevealed)
   )
+}
+
+function wordListPlusPlayerNames(players) {
+  // As an easter egg, add the names of all players in the game to the possible words,
+  // as long as their names are 14 characters or less, and not already in the list.
+  const names = players.map((p) => p.name.toUpperCase()).filter((name) => name.length <= 14 && !wordList.includes(name))
+  return wordList.concat(names)
 }
 
 const { doStartGame, doStartRound, doSetRevealState, doScoreRound } = actions
