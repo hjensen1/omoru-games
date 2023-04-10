@@ -1,6 +1,10 @@
 import { every, shuffle } from "lodash"
-import { doSetFullState, enhance, getState, state } from "../redux/redux2"
-import { otherTeam } from "./gameMeta"
+import actions from "../cauldron/actions"
+import { cauldron } from "../cauldron/cauldron"
+import { state } from "../cauldron/state"
+import { hostId } from "../peerjsMiddleware/hostId"
+import { peerId } from "../peerjsMiddleware/peerId"
+import { otherTeam } from "./cauldron/gameMeta"
 import { wordList } from "./wordList"
 
 export function generateRound(rounds, players, team, corrects) {
@@ -27,14 +31,20 @@ export function generateRound(rounds, players, team, corrects) {
 }
 
 export function startGame() {
-  if (!window.peerId === window.hostId) return
+  if (peerId !== hostId) return
 
+  // To ensure synchronization of randomly generated details,
+  // setup in host then send full state to clients.
   doStartGame()
-  doSetFullState(getState())
+  actions.doSetFullState(cauldron.getState())
 }
 
-export const doStartGame = enhance("startGame", function startGame() {
-  if (!window.peerId === window.hostId) return
+actions.doStartGame = function () {
+  console.log(peerId, hostId)
+  // To ensure synchronization of randomly generated details,
+  // setup in host then send full state to clients.
+  if (peerId !== hostId) return
+
   const shuffled = shuffle(wordList)
   state.teams[0] = shuffle(state.teams[0])
   state.teams[1] = shuffle(state.teams[1])
@@ -49,24 +59,25 @@ export const doStartGame = enhance("startGame", function startGame() {
     { interceptions: 0, miscommunications: 0 },
   ]
   doStartRound()
-})
+}
 
-export const doStartRound = enhance("startRound", function startRound() {
+actions.doStartRound = function () {
   const { rounds, corrects } = state
   rounds[0].push(generateRound(rounds[0], state.teams[0], 0, corrects))
   rounds[1].push(generateRound(rounds[1], state.teams[1], 1, corrects))
-})
+}
 
 function delay(duration) {
   return new Promise((resolve) => {
     setTimeout(() => resolve(), duration)
   })
 }
+
 let endingRound = false
 export async function endRound() {
   if (endingRound) return
-  if (window.peerId !== window.hostId) return
-  if (!canEndRound(getState())) return
+  if (peerId !== hostId) return
+  if (!canEndRound(cauldron.getState())) return
   endingRound = true
 
   await delay(1000)
@@ -83,7 +94,7 @@ export async function endRound() {
   doSetRevealState("correctRevealed", 1)
   await delay(2000)
 
-  if (isGameOver(getState())) {
+  if (isGameOver(cauldron.getState())) {
     // endGame()
   } else {
     doStartRound()
@@ -97,7 +108,7 @@ function canEndRound(state) {
   return every(lastRounds, (round) => round && round.cluesSubmitted && round.theirsSubmitted && round.oursSubmitted)
 }
 
-const doSetRevealState = enhance("setRevealState", function setRevealState(key, team) {
+actions.doSetRevealState = function setRevealState(key, team) {
   const round = state.rounds[team].last
   if (!round[key]) {
     round[key] = true
@@ -105,16 +116,16 @@ const doSetRevealState = enhance("setRevealState", function setRevealState(key, 
       doScoreRound(team)
     }
   }
-})
+}
 
-const doScoreRound = enhance("scoreRound", function scoreRound(team) {
+actions.doScoreRound = function scoreRound(team) {
   const round = state.rounds[team].last
   if (JSON.stringify(round.theirs) === JSON.stringify(round.correct)) {
     state.score[otherTeam(team)].interceptions += 1
   } else if (JSON.stringify(round.ours) !== JSON.stringify(round.correct)) {
     state.score[team].miscommunications += 1
   }
-})
+}
 
 function isGameOver(state) {
   return (
@@ -125,3 +136,5 @@ function isGameOver(state) {
     (state.rounds[1].length === 8 && state.rounds[1].last.correctRevealed)
   )
 }
+
+const { doStartGame, doStartRound, doSetRevealState, doScoreRound } = actions

@@ -6,7 +6,11 @@ import { Provider } from "react-redux"
 import { produce } from "immer"
 import md5 from "crypto-js/md5"
 import { keyBy, sortBy } from "lodash"
-import { store } from "./redux/redux2"
+import buildStore from "./cauldron/buildStore"
+import { initialState } from "./decrypto/cauldron/initialState"
+import { setCauldron } from "./cauldron/cauldron"
+import { initializePeer } from "./peerjsMiddleware/initializePeer"
+import { applyPeerjsMiddleware } from "./peerjsMiddleware/peerjsMiddleware"
 
 window.md5 = md5
 window.produce = produce
@@ -32,8 +36,14 @@ Object.defineProperty(Array.prototype, "last", {
   },
 })
 
+const cauldron = buildStore({ initialState })
+applyPeerjsMiddleware(cauldron)
+setCauldron(cauldron)
+
+initializePeer()
+
 ReactDOM.render(
-  <Provider store={store}>
+  <Provider store={cauldron}>
     <React.StrictMode>
       <App />
     </React.StrictMode>

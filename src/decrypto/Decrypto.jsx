@@ -1,13 +1,15 @@
 import { useState } from "react"
 import { useSelector } from "react-redux"
+import { hostId } from "../peerjsMiddleware/hostId"
+import { peerId } from "../peerjsMiddleware/peerId"
 import GameBoard from "./GameBoard"
-import { joinGame, joinTeam, otherTeam } from "./gameMeta"
+import { doAddPlayer } from "./cauldron/gameMeta"
 import { startGame } from "./gameSetup"
 import TurnEnder from "./TurnEnder"
 
 export default function Decrypto() {
   const players = useSelector((state) => state.players)
-  const self = players.find((p) => p.id === window.peerId)
+  const self = players.find((p) => p.id === peerId)
   const canStartGame = useSelector(
     (state) => state.rounds[0].length === 0 && state.teams[0].length >= 1 && state.teams[1].length >= 1
   )
@@ -20,7 +22,7 @@ export default function Decrypto() {
   // }
   return (
     <div className="flex flex-col items-center">
-      {window.hostId === window.peerId && canStartGame && (
+      {hostId === peerId && canStartGame && (
         <button className="btn flex-0 w-32 mt-6" onClick={startGame}>
           Start Game
         </button>
@@ -46,23 +48,10 @@ function JoinGame() {
         className="btn flex-0"
         disabled={!name}
         onClick={() => {
-          if (name) joinGame(name)
+          if (name) doAddPlayer(peerId, name)
         }}
       >
         Join Game
-      </button>
-    </div>
-  )
-}
-
-function JoinTeam() {
-  return (
-    <div className="flex justify-center items-center h-full w-full space-x-4">
-      <button className="btn flex-0" onClick={() => joinTeam(0)}>
-        Join Blue Team
-      </button>
-      <button className="btn btn-red flex-0" onClick={() => joinTeam(1)}>
-        Join Red Team
       </button>
     </div>
   )

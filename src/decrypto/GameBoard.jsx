@@ -1,12 +1,12 @@
 import clsx from "clsx"
-import { capitalize } from "lodash"
 import React, { createContext, useContext, useMemo } from "react"
 import { useState } from "react"
 import { useSelector } from "react-redux"
-import { joinTeam } from "./gameMeta"
-import { doIncrementGuess, doSetGuesses, doSubmitClues, doSubmitOurs, doSubmitTheirs } from "./playerActions"
+import { doAddToTeam } from "./cauldron/gameMeta"
+import { doIncrementGuess, doSubmitClues, doSubmitOurs, doSubmitTheirs } from "./playerActions"
 import CheckIcon from "../images/check.svg?component"
 import XIcon from "../images/close.svg?component"
+import { peerId } from "../peerjsMiddleware/peerId"
 
 const GameBoardContext = createContext({})
 function useGameBoardContext() {
@@ -66,7 +66,7 @@ function TeamMembers() {
           </div>
         ) : (
           self.team !== team && (
-            <button className={clsx("btn", team === 1 && "btn-red")} onClick={() => joinTeam(team)}>
+            <button className={clsx("btn", team === 1 && "btn-red")} onClick={() => doAddToTeam(peerId, team)}>
               Join Team
             </button>
           )

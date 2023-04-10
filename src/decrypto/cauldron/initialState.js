@@ -1,5 +1,7 @@
+import { hostId } from "../../peerjsMiddleware/hostId"
+
 export const initialState = {
-  hostId: window.hostId,
+  hostId,
   players: [],
   teams: [[], []],
   words: [

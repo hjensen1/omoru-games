@@ -1,14 +1,15 @@
-import { enhance, state } from "../redux/redux2"
+import actions from "../cauldron/actions"
+import { state } from "../cauldron/state"
 
-export const doSubmitClues = enhance("submitClues", function submitClues(clues, team) {
+actions.doSubmitClues = function submitClues(clues, team) {
   const round = state.rounds[team].last
   if (round.cluesSubmitted) return
 
   round.clues = clues
   round.cluesSubmitted = true
-})
+}
 
-export const doSetGuesses = enhance("setGuesses", function setGuesses({ theirs, ours }, team) {
+actions.doSetGuesses = function setGuesses({ theirs, ours }, team) {
   const round = state.rounds[team].last
   if (!round.theirsSubmitted) {
     round.theirs = theirs
@@ -16,20 +17,22 @@ export const doSetGuesses = enhance("setGuesses", function setGuesses({ theirs, 
   if (!round.oursSubmitted) {
     round.ours = ours
   }
-})
+}
 
-export const doIncrementGuess = enhance("incrementGuess", function incrementGuess(key, index, team) {
+actions.doIncrementGuess = function incrementGuess(key, index, team) {
   const round = state.rounds[team].last
   if (round[`${key}Submitted`]) return
   round[key][index] = (round[key][index] % 4) + 1
-})
+}
 
-export const doSubmitTheirs = enhance("submitTheirs", function submitTheirs(team) {
+actions.doSubmitTheirs = function submitTheirs(team) {
   const round = state.rounds[team].last
   round.theirsSubmitted = true
-})
+}
 
-export const doSubmitOurs = enhance("submitOurs", function submitOurs(team) {
+actions.doSubmitOurs = function submitOurs(team) {
   const round = state.rounds[team].last
   round.oursSubmitted = true
-})
+}
+
+export const { doSubmitClues, doSetGuesses, doIncrementGuess, doSubmitTheirs, doSubmitOurs } = actions
