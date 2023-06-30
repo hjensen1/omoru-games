@@ -1,5 +1,4 @@
-import Decrypto from "../decrypto/Decrypto"
-// import Test from "../test/Test"
+import Decrypto from "./Decrypto"
 
 export default function App() {
   return (
