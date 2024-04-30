@@ -4,7 +4,7 @@ import { state } from "../../cauldron/state"
 import { useSelector } from "react-redux"
 import { doAddPlayer, doSeatPlayer } from "./gameMeta"
 
-export const doSendCard = (actions.doSendCard = function ({ cardId, fromZoneId, toZoneId }) {
+actions.doSendCard = function ({ cardId, fromZoneId, toZoneId }) {
   const card = state.cards.find((c) => c.id === cardId)
 
   const fromList = state.cardsByZoneId[fromZoneId]
@@ -13,7 +13,9 @@ export const doSendCard = (actions.doSendCard = function ({ cardId, fromZoneId, 
   const toZone = state.cardsByZoneId[toZoneId]
   toZone.push(card)
   state.cardState[cardId].zoneId = toZoneId
-})
+}
+
+export const { doSendCard } = actions
 
 actions.doDrawCard = function (seatIndex) {
   const playerId = state.seats[seatIndex]

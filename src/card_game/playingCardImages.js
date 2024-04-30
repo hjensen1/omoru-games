@@ -115,3 +115,82 @@ const allCards = {
 }
 
 export default allCards
+
+export function buildPlayingCardDisplay({ id, face = id, back = "Back1" }) {
+  return {
+    id,
+    face,
+    back,
+    top: -1000,
+    left: -1000,
+    width: 0,
+    height: 0,
+    rotation: 0,
+    zIndex: 0,
+    view: "face-up",
+    visible: true,
+  }
+}
+
+export function buildPlayingCardDeck({ includeJokers = true, back = "Back1", buildCardId = (x) => x } = {}) {
+  const map = {
+    C2,
+    C3,
+    C4,
+    C5,
+    C6,
+    C7,
+    C8,
+    C9,
+    C0,
+    CJ,
+    CQ,
+    CK,
+    CA,
+    D2,
+    D3,
+    D4,
+    D5,
+    D6,
+    D7,
+    D8,
+    D9,
+    D0,
+    DJ,
+    DQ,
+    DK,
+    DA,
+    H2,
+    H3,
+    H4,
+    H5,
+    H6,
+    H7,
+    H8,
+    H9,
+    H0,
+    HJ,
+    HQ,
+    HK,
+    HA,
+    S2,
+    S3,
+    S4,
+    S5,
+    S6,
+    S7,
+    S8,
+    S9,
+    S0,
+    SJ,
+    SQ,
+    SK,
+    SA,
+  }
+  if (includeJokers) {
+    map.BX = BX
+    map.RX = RX
+  }
+
+  return Object.keys(map).map((face) => buildPlayingCardDisplay({ id: buildCardId(face), face, back }))
+}
