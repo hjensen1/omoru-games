@@ -1,6 +1,7 @@
 import { pull, shuffle } from "lodash"
 import actions from "../cauldron/actions"
 import { state } from "../cauldron/state"
+import { doArrangeCards } from "./arrangeCards"
 
 actions.doRemoveCardFromZone = function ({ cardId, zoneId }) {
   pull(state.cardsByZoneId[zoneId], cardId)
@@ -71,10 +72,10 @@ actions.doAddZoneToGame = function ({
   name = id,
   type,
   owner = null,
-  top = 0,
-  left = 0,
-  width = 0,
-  height = 0,
+  top,
+  left,
+  width,
+  height,
   justify = "center",
   rotation = 0,
   view = "face-up",
@@ -89,3 +90,17 @@ actions.doShuffleDeck = function ({ zoneId }) {
   state.cardsByZoneId[zoneId] = shuffle(state.cardsByZoneId[zoneId])
 }
 export const { doShuffleDeck } = actions
+
+actions.doAutoResizeZones = function (zonesDisplay) {
+  for (const zoneId in zonesDisplay) {
+    const oldZoneDisplay = state.zonesDisplay[zoneId]
+    state.zonesDisplay[zoneId] = {
+      ...zonesDisplay[zoneId],
+      justify: oldZoneDisplay.justify ?? "center",
+      rotation: oldZoneDisplay.rotation ?? 0,
+      view: oldZoneDisplay.view ?? "face-up",
+    }
+  }
+  doArrangeCards()
+}
+export const { doAutoResizeZones } = actions

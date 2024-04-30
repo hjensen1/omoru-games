@@ -30,8 +30,9 @@ actions.doArrangeDeckCards = function (zone, zoneDisplay, cardsState, cardsDispl
     const cardDisplay = cardsDisplay[i]
     set(cardDisplay, "top", zoneDisplay.top)
     set(cardDisplay, "left", zoneDisplay.left)
-    set(cardDisplay, "width", zoneDisplay.width)
-    set(cardDisplay, "height", zoneDisplay.height)
+    const { width, height } = computeCardSize(zoneDisplay, state.cardSize)
+    set(cardDisplay, "width", width)
+    set(cardDisplay, "height", height)
     set(cardDisplay, "rotation", zoneDisplay.rotation + cardState.rotation)
     set(cardDisplay, "zIndex", i)
     set(cardDisplay, "view", cardState.orientation)
@@ -45,15 +46,18 @@ actions.doArrangeHandCards = function (zone, zoneDisplay, cardsState, cardsDispl
     const cardState = cardsState[i]
     const cardDisplay = cardsDisplay[i]
     set(cardDisplay, "top", zoneDisplay.top)
+    const { width, height } = computeCardSize(zoneDisplay, state.cardSize)
     set(
       cardDisplay,
       "left",
-      zoneDisplay.left + computeLeft(zoneDisplay.width, state.cardSize.width, zoneDisplay.justify, i, cardsState.length)
+      zoneDisplay.left + computeLeft(zoneDisplay.width, width, zoneDisplay.justify, i, cardsState.length)
     )
-    set(cardDisplay, "width", state.cardSize.width)
-    set(cardDisplay, "height", state.cardSize.height)
+    set(cardDisplay, "width", width)
+    set(cardDisplay, "height", height)
     set(cardDisplay, "rotation", zoneDisplay.rotation + cardState.rotation)
-    set(cardDisplay, "zIndex", i)
+    // Hand cards have higher z-index than deck cards.
+    // Without this, cards dealt face-up from the deck may appear to be under the top face-down card.
+    set(cardDisplay, "zIndex", 1000 + i)
     set(cardDisplay, "view", cardState.orientation)
     set(cardDisplay, "visible", true)
   }
@@ -73,6 +77,13 @@ function computeLeft(zoneWidth, cardWidth, justify, index, count) {
     // center
     return (zoneWidth - totalCardWidth) / 2 + cardWidth * index
   }
+}
+
+function computeCardSize(zoneDisplay, cardSize) {
+  const widthRatio = zoneDisplay.width / cardSize.width
+  const heightRatio = zoneDisplay.height / cardSize.height
+  const ratio = Math.min(widthRatio, heightRatio, 1)
+  return { width: cardSize.width * ratio, height: cardSize.height * ratio }
 }
 
 function set(object, key, value) {

@@ -1,14 +1,16 @@
-import { useState } from "react"
+import { memo, useState } from "react"
 import { useCardClickContext } from "./cardContexts"
 import clsx from "clsx"
 
-export default function Card({ Front, Back, cardDisplay }) {
+function Card({ Front, Back, cardDisplay }) {
   const { onCardClick } = useCardClickContext()
   const { top, left, width, height, rotation, zIndex, view, visible } = cardDisplay
   const Face = view === "face-down" ? Back : Front
   const transform = rotation % 360 === 0 ? undefined : `rotate(${rotation % 360}deg)`
 
   const [hovering, setHovering] = useState(false)
+
+  if (top == null || left == null || isNaN(top) || isNaN(left)) return null
 
   return (
     <>
@@ -34,3 +36,5 @@ export default function Card({ Front, Back, cardDisplay }) {
     </>
   )
 }
+
+export default memo(Card)

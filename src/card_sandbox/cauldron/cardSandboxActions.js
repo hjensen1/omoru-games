@@ -8,26 +8,14 @@ actions.doInitCardSandbox = function () {
   doAddZoneToGame({
     id: "zone1",
     type: "hand",
-    top: 10,
-    left: 10,
-    width: 1200,
-    height: 350,
   })
   doAddZoneToGame({
     id: "zone2",
     type: "hand",
-    top: 400,
-    left: 10,
-    width: 1200,
-    height: 350,
   })
   doAddZoneToGame({
     id: "deck1",
     type: "deck",
-    top: 800,
-    left: 500,
-    width: 250,
-    height: 350,
   })
 
   const cardsDisplay = buildPlayingCardDeck()
