@@ -4,11 +4,13 @@ import { ZoneContext } from "./ZoneContext"
 import { useCardSize } from "./CardSizeContext"
 import CardInteraction from "./CardInteraction"
 import { useState } from "react"
+import { useZoneCards } from "../card_sandbox/cauldron/cardActions"
 
-export default function Hand({ width, height, zoneId, onClick }) {
+export default function Hand({ width, height, zoneId, onClick, onMouseEnter, onMouseLeave }) {
   const { cardWidth, cardHeight } = useCardSize()
   const zone = useSelector((state) => state.zones[zoneId])
-  const { cards, owner } = zone
+  const cards = useZoneCards(zoneId)
+  const { owner } = zone
   const revealed = !owner || owner === peerId
 
   const [containerEl, setContainerEl] = useState(null)
@@ -34,6 +36,9 @@ export default function Hand({ width, height, zoneId, onClick }) {
               visible={true}
               zIndex={index}
               onClick={onClick}
+              onMouseEnter={onMouseEnter}
+              onMouseLeave={onMouseLeave}
+              occluded={cardWidth * cards.length > width && index !== cards.length - 1}
             />
           ))}
       </div>

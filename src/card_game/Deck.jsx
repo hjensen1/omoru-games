@@ -3,11 +3,13 @@ import { ZoneContext } from "./ZoneContext"
 import { useCardSize } from "./CardSizeContext"
 import CardInteraction from "./CardInteraction"
 import { useState } from "react"
+import { useZoneCards } from "../card_sandbox/cauldron/cardActions"
 
 export default function Deck({ zoneId, onClick }) {
   const { cardWidth, cardHeight } = useCardSize()
   const zone = useSelector((state) => state.zones[zoneId])
-  const { cards, revealed } = zone
+  const cards = useZoneCards(zoneId)
+  const { revealed } = zone
 
   const [containerEl, setContainerEl] = useState(null)
   const { top, left } = containerEl?.getBoundingClientRect() || {}

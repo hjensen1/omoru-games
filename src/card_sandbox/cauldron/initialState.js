@@ -23,27 +23,40 @@ const zone1Cards = [{ face: "SA", id: "SA" }]
 
 const cards = [...deckCards, ...zone1Cards]
 
+const cardState = {}
+deckCards.forEach((card) => {
+  cardState[card.id] = { zoneId: "deck1" }
+})
+zone1Cards.forEach((card) => {
+  cardState[card.id] = { zoneId: "zone1" }
+})
+
 export const initialState = {
   hostId,
   players: [],
   zones: {
     zone1: {
       id: "zone1",
+      type: "hand",
       owner: null,
-      cards: zone1Cards,
     },
     zone2: {
       id: "zone2",
+      type: "hand",
       owner: null,
-      cards: [],
     },
     deck1: {
       id: "deck1",
       type: "deck",
       revealed: false,
       owner: null,
-      cards: deckCards,
     },
   },
   cards: cards,
+  cardsByZoneId: {
+    zone1: zone1Cards,
+    zone2: [],
+    deck1: deckCards,
+  },
+  cardState,
 }

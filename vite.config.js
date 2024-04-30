@@ -13,6 +13,7 @@ export default defineConfig({
         main: resolve(__dirname, "index.html"),
         decrypto: resolve(__dirname, "decrypto/index.html"),
         card_sandbox: resolve(__dirname, "card_sandbox/index.html"),
+        love_letter: resolve(__dirname, "love_letter/index.html"),
       },
     },
   },

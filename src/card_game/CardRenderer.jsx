@@ -20,7 +20,7 @@ export function CardRenderer({ CardComponent, children }) {
 
 // Use a ref to allow other components to control this component's position
 function CardWrapper({ card, CardComponent, controlRef }) {
-  const [position, setPosition] = useState({ top: 0, left: 0, revealed: true, visible: false })
+  const [position, setPosition] = useState({ top: 0, left: 0, revealed: true, visible: false, hovering: false })
 
   useEffect(() => {
     controlRef.current[card.id] = { position, setPosition }

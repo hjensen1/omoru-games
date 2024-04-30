@@ -3,8 +3,12 @@ import Hand from "../card_game/Hand"
 import { CardSizeContext } from "../card_game/CardSizeContext"
 import { CardRenderer } from "../card_game/CardRenderer"
 import PlayingCard from "../card_game/PlayingCard"
-import { doSendCard } from "./cauldron/cardActions"
-import Deck from "../card_game/Deck"
+
+import { peerId } from "../peerjsMiddleware/peerId"
+import PlayerZones from "./PlayerZones"
+import { useEffect } from "react"
+import { doInitTestGame } from "./cauldron/cardActions"
+import LoveLetterCard from "./LoveLetterCard"
 
 const CARD_SIZE = {
   cardWidth: 125,
@@ -14,14 +18,24 @@ const CARD_SIZE = {
   scale: 0.5,
 }
 
-export default function CardSandbox() {
-  const zones = useSelector((state) => state.zones)
+export default function LoveLetter() {
+  const seats = useSelector((state) => state.seats)
+  const mySeatIndex = seats.indexOf(peerId)
+
+  useEffect(() => {
+    setTimeout(doInitTestGame, 1000)
+  }, [])
+
   return (
     <CardSizeContext.Provider value={CARD_SIZE}>
       <div className="flex-center flex-col min-h-screen text-gray-300 text-14">
-        <div className="mb-4">This is CardSandbox</div>
-        <CardRenderer CardComponent={PlayingCard}>
-          {Object.values(zones).map((zone) =>
+        <div className="mb-4">This is LoveLetter</div>
+        <CardRenderer CardComponent={LoveLetterCard}>
+          {[0, 1, 2, 3].map((relativeSeatIndex) => {
+            const seatIndex = (relativeSeatIndex + mySeatIndex) % 4
+            return <PlayerZones key={relativeSeatIndex} seatIndex={seatIndex} relativeSeatIndex={relativeSeatIndex} />
+          })}
+          {/* {Object.values(zones).map((zone) =>
             zone.type === "deck" ? (
               <div key={zone.id} className="border-2 border-gray-500 p-2 mb-4">
                 <Deck
@@ -51,7 +65,7 @@ export default function CardSandbox() {
                 />
               </div>
             )
-          )}
+          )} */}
         </CardRenderer>
       </div>
     </CardSizeContext.Provider>
