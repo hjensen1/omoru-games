@@ -41,7 +41,7 @@ actions.doInitCardSandbox = function () {
 }
 export const { doInitCardSandbox } = actions
 
-export function cardClicked(cardId) {
+export function sandboxCardClicked(cardId) {
   const cardState = cauldron.getState().cardsState[cardId]
   const fromZoneId = cardState.zoneId
   const toZoneId = fromZoneId === "zone1" ? "zone2" : "zone1"

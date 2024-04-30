@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import CardRenderer from "../card_game/CardRenderer"
 import PlayingCard from "../card_game/PlayingCard"
-import { doInitCardSandbox } from "./cauldron/cardSandboxActions"
+import { doInitCardSandbox, sandboxCardClicked } from "./cauldron/cardSandboxActions"
 import { doArrangeCards } from "../card_game/arrangeCards"
 
 export default function CardSandbox() {
@@ -11,5 +11,5 @@ export default function CardSandbox() {
       // doArrangeCards()
     }, 1000)
   }, [])
-  return <CardRenderer CardComponent={PlayingCard} />
+  return <CardRenderer CardComponent={PlayingCard} onCardClick={sandboxCardClicked} />
 }
