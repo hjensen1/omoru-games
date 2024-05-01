@@ -1,16 +1,10 @@
-import useResizeObserver from "use-resize-observer"
 import { useCardZonesContext } from "./cardContexts"
-import { useEffect, useRef, useState } from "react"
-import mergeRefs from "merge-refs"
+import { memo, useEffect, useRef, useState } from "react"
 import { eq } from "lodash"
 
-export default function Zone({ id, className, style, children, ...props }) {
+function Zone({ id, className, style, children, ...props }) {
   const { onZoneResized } = useCardZonesContext()
-  // useResizeObserver doesn't really give me all the information I want.
-  // For now it's just here as an extra way to trigger re-render, and I check dimensions on EVERY render.
-  const { ref: resizeRef } = useResizeObserver()
   const [el, setEl] = useState()
-  const ref = mergeRefs(resizeRef, setEl)
 
   const prevDimensions = useRef({})
   useEffect(() => {
@@ -29,8 +23,10 @@ export default function Zone({ id, className, style, children, ...props }) {
   })
 
   return (
-    <div className={className} style={style} {...props} ref={ref} id="test1">
+    <div className={className} style={style} {...props} ref={setEl} id="test1">
       {children}
     </div>
   )
 }
+
+export default memo(Zone)
