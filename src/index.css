@@ -3,6 +3,11 @@ html {
   @apply bg-gray-800;
 }
 
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
 @tailwind base;
 @tailwind components;
 

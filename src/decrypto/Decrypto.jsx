@@ -6,6 +6,7 @@ import GameBoard from "./GameBoard"
 import { doAddPlayer } from "./cauldron/gameMeta"
 import { startGame } from "./gameSetup"
 import TurnEnder from "./TurnEnder"
+import JoinGame from "./JoinGame"
 
 export default function Decrypto() {
   const players = useSelector((state) => state.players)
@@ -21,38 +22,18 @@ export default function Decrypto() {
   //   return <JoinTeam />
   // }
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center justify-center p-8 pt-4 space-y-4">
+      <div className="flex justify-center w-full text-gray-300 text-24 font-bold">Game ID: {hostId}</div>
       {hostId === peerId && canStartGame && (
-        <button className="btn flex-0 w-32 mt-6" onClick={startGame}>
+        <button className="btn flex-0 w-32" onClick={startGame}>
           Start Game
         </button>
       )}
-      <div className="flex justify-center p-8 space-x-8">
+      <div className="flex justify-center space-x-8">
         <GameBoard team={0} self={self} />
         <GameBoard team={1} self={self} />
       </div>
       <TurnEnder />
-    </div>
-  )
-}
-
-function JoinGame() {
-  const [name, setName] = useState("")
-
-  return (
-    <div className="flex justify-center items-center h-full w-full space-x-4 mt-8">
-      <div className="input-container">
-        <input className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your name" />
-      </div>
-      <button
-        className="btn flex-0"
-        disabled={!name}
-        onClick={() => {
-          if (name) doAddPlayer(peerId, name)
-        }}
-      >
-        Join Game
-      </button>
     </div>
   )
 }
