@@ -18,8 +18,8 @@ export function MobileGame({ self, startGame, canStartGame }) {
     <div className="flex flex-col items-center justify-center w-full h-full pb-4 pt-12 overflow-auto">
       <MobileGameTabs self={self} activeTab={activeTab} setActiveTab={setActiveTab} />
       <Overview self={self} startGame={startGame} canStartGame={canStartGame} active={activeTab === "Overview"} />
-      <MobileGameBoard self={self} team={0} active={activeTab === "Blue Team"} />
-      <MobileGameBoard self={self} team={1} active={activeTab === "Red Team"} />
+      <MobileGameBoard self={self} team={0} active={activeTab === "Blue Team"} setActiveTab={setActiveTab} />
+      <MobileGameBoard self={self} team={1} active={activeTab === "Red Team"} setActiveTab={setActiveTab} />
       <TurnEnder />
     </div>
   )
@@ -132,14 +132,15 @@ function useGameBoardContext() {
   return useContext(GameBoardContext)
 }
 
-export default function MobileGameBoard({ team, self, active }) {
+export default function MobileGameBoard({ team, self, active, setActiveTab }) {
   const contextData = useMemo(
     () => ({
       team,
       self,
       active,
+      setActiveTab,
     }),
-    [team, self, active]
+    [team, self, active, setActiveTab]
   )
   const roundNum = useSelector((state) => state.rounds[team].length)
 
@@ -330,43 +331,46 @@ function RoundHistory() {
   const rounds = useSelector((state) => state.rounds[team])
   const completedRounds = rounds.filter((round) => round.theirsRevealed)
   const lastRound = completedRounds.pop()
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(0)
 
   if (!lastRound) return null
   return (
     <div
       className={clsx(
-        "divide-y-4 divide-opacity-50 p-0 relative rounded-none",
+        "divide-y-4 divide-opacity-50 p-0 relative rounded-none cursor-pointer",
         team === 0 ? "panel-blue divide-blue-900" : "panel-red divide-red-900"
       )}
+      onClick={() => setExpanded((expanded + 2) % 3)}
     >
-      {expanded && completedRounds.map((round, i) => <Round round={round} key={i} />)}
-      {
-        <div className="cursor-pointer" onClick={() => setExpanded(!expanded)}>
-          <Round round={lastRound} />
-        </div>
-      }
+      {expanded === 0 && <div className="text-16 font-medium w-full text-center">Round {rounds.length} Results</div>}
+      {expanded === 2 && completedRounds.map((round, i) => <Round round={round} key={i} />)}
+      {expanded !== 0 && <Round round={lastRound} />}
     </div>
   )
 }
 
 const classLoad = ["border-blue-700", "border-red-700", "text-blue-500", "text-red-500"]
 function Round({ round }) {
-  const { team, self } = useGameBoardContext()
+  const { team, self, setActiveTab } = useGameBoardContext()
   const { roundNum, clues, ours, theirs, correct, theirsRevealed, oursRevealed, correctRevealed } = round
   const ourColor = team === 0 ? "blue" : "red"
   const theirColor = team === 0 ? "red" : "blue"
 
+  useEffect(() => {
+    console.log(team === 0 ? "Blue Team" : "Red Team")
+    setActiveTab(team === 0 ? "Blue Team" : "Red Team")
+  }, [])
+
   return (
-    <div className="flex items-center p-4">
-      <div className="w-16 mr-4">Round {roundNum}</div>
-      <div className="flex-1 space-y-1">
+    <div className="flex flex-col justify-center items-center p-2 pt-0.5">
+      <div className="text-16 font-medium">Round {roundNum} Results</div>
+      <div className="w-full space-y-1">
         {[0, 1, 2].map((i) => (
-          <div className="flex" key={i}>
-            <div className="flex-1 font-medium text-18 text-gray-400 h-6 bg-gray-750 mr-4 px-2">{clues[i]}</div>
+          <div className="flex w-full" key={i}>
+            <div className="flex-1 font-medium text-16 text-gray-400 bg-gray-750 mr-2 px-2">{clues[i]}</div>
             <div
               className={clsx(
-                "w-6 h-6 flex-center mr-1",
+                "w-6 h-6 flex-center mr-1 text-16",
                 `border-${theirColor}-700 text-${theirColor}-500`,
                 theirs[i] === correct[i] ? "border-2" : "border"
               )}
@@ -375,14 +379,14 @@ function Round({ round }) {
             </div>
             <div
               className={clsx(
-                "w-6 h-6 flex-center mr-1",
+                "w-6 h-6 flex-center mr-1 text-16",
                 `border-${ourColor}-700 text-${ourColor}-500`,
                 ours[i] === correct[i] ? "border-2" : "border"
               )}
             >
               {oursRevealed && <span className="">{ours[i]}</span>}
             </div>
-            <div className={clsx("border w-6 h-6 flex-center", `border-gray-600 text-gray-300`)}>
+            <div className={clsx("border w-6 h-6 flex-center text-16", `border-gray-600 text-gray-300`)}>
               {correctRevealed && <span className="">{correct[i]}</span>}
             </div>
           </div>
