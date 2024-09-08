@@ -246,15 +246,7 @@ function ClueInputs() {
           </div>
         ))}
         <div className="flex justify-center">
-          <button
-            className={team === 0 ? "btn" : "btn btn-red"}
-            onClick={() =>
-              doSubmitClues(
-                clues.map((clue) => clue.toUpperCase()),
-                team
-              )
-            }
-          >
+          <button className={team === 0 ? "btn" : "btn btn-red"} onClick={() => doSubmitClues(clues, team)}>
             Submit Clues
           </button>
         </div>

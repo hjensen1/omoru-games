@@ -2,6 +2,15 @@ import actions from "../cauldron/actions"
 import { state } from "../cauldron/state"
 
 actions.doSubmitClues = function submitClues(clues, team) {
+  clues = clues.map((clue) => clue.toUpperCase())
+  const allClues = state.rounds[team]
+    .filter((round) => round.cluesSubmitted)
+    .map((round) => round.clues)
+    .flat()
+    .concat(clues)
+  console.log(allClues)
+  if (new Set(allClues).size < allClues.length) return
+
   const round = state.rounds[team].last
   if (round.cluesSubmitted) return
 
