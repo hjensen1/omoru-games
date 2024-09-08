@@ -15,7 +15,7 @@ export function MobileGame({ self, startGame, canStartGame }) {
   const [activeTab, setActiveTab] = useState("Overview")
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full p-4 pt-12 overflow-auto">
+    <div className="flex flex-col items-center justify-center w-full h-full pb-4 pt-12 overflow-auto">
       <MobileGameTabs self={self} activeTab={activeTab} setActiveTab={setActiveTab} />
       <Overview self={self} startGame={startGame} canStartGame={canStartGame} active={activeTab === "Overview"} />
       <MobileGameBoard self={self} team={0} active={activeTab === "Blue Team"} />
@@ -137,14 +137,15 @@ export default function MobileGameBoard({ team, self, active }) {
     () => ({
       team,
       self,
+      active,
     }),
-    [team, self]
+    [team, self, active]
   )
   const roundNum = useSelector((state) => state.rounds[team].length)
 
   return (
     <GameBoardContext.Provider value={contextData}>
-      <div className="w-full space-y-4">
+      <div className={clsx("w-full space-y-4", !active && "hidden")}>
         {self.team != null && (
           <>
             <Words />
@@ -160,9 +161,9 @@ export default function MobileGameBoard({ team, self, active }) {
   )
 }
 
-const otherTeamWords = ["ADMINISTRATION", "ADMINISTRATION", "ADMINISTRATION", "ADMINISTRATION"]
+const otherTeamWords = ["????", "????", "????", "????"]
 function Words() {
-  const { team, self } = useGameBoardContext()
+  const { team, self, active } = useGameBoardContext()
   const words = useSelector((state) => state.words[team])
 
   const [word1El, setWord1El] = useState(null)
@@ -173,11 +174,11 @@ function Words() {
   const wordElSetters = [setWord1El, setWord2El, setWord3El, setWord4El]
   useEffect(() => {
     for (const wordEl of wordEls) {
-      if (wordEl) {
-        textFit(wordEl, { minFontSize: 9, maxFontSize: 13 })
+      if (wordEl && active) {
+        textFit(wordEl, { minFontSize: 9, maxFontSize: 12 })
       }
     }
-  }, wordEls)
+  }, [...wordEls, active])
 
   const gameStarted = useSelector((state) => !!state.rounds[0][0])
   if (!gameStarted) return null
@@ -185,7 +186,7 @@ function Words() {
   return (
     <div
       className={clsx(
-        "flex flex-1 divide-x-4 divide-opacity-50 p-0 -mx-4",
+        "flex flex-1 divide-x-4 divide-opacity-50 p-0 rounded-none",
         team === 0 ? "panel-blue divide-blue-900" : "panel-red divide-red-900"
       )}
     >
@@ -212,7 +213,7 @@ function ClueInputs() {
   if (round.cluegiver !== self.id) {
     const cluegiver = players.find((player) => player.id === round.cluegiver)
     return (
-      <div className="mb-2 ml-1 font-medium text-20 text-gray-300">
+      <div className="mb-1 font-medium text-16 text-gray-300 w-full text-center">
         <span className="font-bold">{cluegiver.name}</span> is giving clues
       </div>
     )
@@ -222,20 +223,22 @@ function ClueInputs() {
 
   return (
     <div>
-      <div className="mb-2 ml-1 font-medium text-20 text-gray-300">It's your turn to give clues!</div>
-      <div className={clsx("p-4 pb-2 space-y-2", team === 0 ? "panel-blue" : "panel-red")}>
+      <div className="mb-1 font-medium text-16 text-gray-300 w-full text-center">It's your turn to give clues!</div>
+      <div className={clsx("p-2 space-y-2 rounded-none", team === 0 ? "panel-blue" : "panel-red")}>
         {correct.map((number, i) => (
-          <div key={i} className="flex items-center">
-            <div className="font-medium text-18 w-6">#{number}</div>
-            <div className="font-medium text-18 text-gray-400 w-32 mr-4">{words[number - 1]}</div>
+          <div key={i} className="flex flex-col w-full">
+            <div className="flex">
+              <div className="font-medium text-16 w-6">#{number}</div>
+              <div className="font-medium text-16 text-gray-400 w-32 mr-4">{words[number - 1]}</div>
+            </div>
             <div className="input-container flex-1">
               <input
-                className="input flex-1"
+                className="input flex-1 uppercase"
                 placeholder={`Enter a clue for ${words[number - 1]}`}
                 value={clues[i]}
                 onChange={(e) => {
                   const a = [...clues]
-                  a[i] = e.target.value.toUpperCase()
+                  a[i] = e.target.value
                   setClues(a)
                 }}
               />
@@ -243,7 +246,15 @@ function ClueInputs() {
           </div>
         ))}
         <div className="flex justify-center">
-          <button className={team === 0 ? "btn" : "btn btn-red"} onClick={() => doSubmitClues(clues, team)}>
+          <button
+            className={team === 0 ? "btn" : "btn btn-red"}
+            onClick={() =>
+              doSubmitClues(
+                clues.map((clue) => clue.toUpperCase()),
+                team
+              )
+            }
+          >
             Submit Clues
           </button>
         </div>
@@ -277,7 +288,9 @@ function GuessInputs() {
           Guess {team === self.team ? "your team's" : "the opposing team's"} clues!
         </div>
       )}
-      <div className={clsx("p-4 space-y-2", team === 0 ? "panel-blue" : "panel-red", !isSubmitted && "pb-2")}>
+      <div
+        className={clsx("p-4 space-y-2 rounded-none", team === 0 ? "panel-blue" : "panel-red", !isSubmitted && "pb-2")}
+      >
         {clues.map((clue, i) => (
           <div key={i} className="flex items-center">
             <div className="flex items-center h-7 flex-1 bg-gray-750 px-2 font-medium text-18 text-gray-300 mr-4">
@@ -331,7 +344,7 @@ function RoundHistory() {
   return (
     <div
       className={clsx(
-        "divide-y-4 divide-opacity-50 p-0 relative",
+        "divide-y-4 divide-opacity-50 p-0 relative rounded-none",
         team === 0 ? "panel-blue divide-blue-900" : "panel-red divide-red-900"
       )}
     >
@@ -395,7 +408,7 @@ function ClueHistory() {
   if (completedRounds.length === 0) return null
 
   return (
-    <div className={clsx("p-0", team === 0 ? "panel-blue" : "panel-red")}>
+    <div className={clsx("p-0 rounded-none", team === 0 ? "panel-blue" : "panel-red")}>
       {completedRounds.map((round, i) => (
         <ClueHistoryRow
           key={i}

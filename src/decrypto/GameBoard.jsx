@@ -139,12 +139,12 @@ function ClueInputs() {
             <div className="font-medium text-18 text-gray-400 w-32 mr-4">{words[number - 1]}</div>
             <div className="input-container flex-1">
               <input
-                className="input flex-1"
+                className="input flex-1 uppercase"
                 placeholder={`Enter a clue for ${words[number - 1]}`}
                 value={clues[i]}
                 onChange={(e) => {
                   const a = [...clues]
-                  a[i] = e.target.value.toUpperCase()
+                  a[i] = e.target.value
                   setClues(a)
                 }}
               />
@@ -152,7 +152,15 @@ function ClueInputs() {
           </div>
         ))}
         <div className="flex justify-center">
-          <button className={team === 0 ? "btn" : "btn btn-red"} onClick={() => doSubmitClues(clues, team)}>
+          <button
+            className={team === 0 ? "btn" : "btn btn-red"}
+            onClick={() =>
+              doSubmitClues(
+                clues.map((clue) => clue.toUpperCase()),
+                team
+              )
+            }
+          >
             Submit Clues
           </button>
         </div>
