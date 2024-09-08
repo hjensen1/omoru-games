@@ -21,6 +21,7 @@
     "react-responsive": "^10.0.0",
     "redux": "^4.1.2",
     "redux-thunk": "^2.4.1",
+    "textfit": "^2.4.0",
     "use-resize-observer": "^9.1.0",
     "uuid": "^8.3.2"
   },

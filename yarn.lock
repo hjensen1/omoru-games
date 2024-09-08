@@ -2191,6 +2191,11 @@ tailwindcss@^3.0.5:
     resolve "^1.20.0"
     tmp "^0.2.1"
 
+textfit@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/textfit/-/textfit-2.4.0.tgz#80cba8006bfb9c3d9d552739257957bdda95c79c"
+  integrity sha512-/x4aoY5+/tJmu+iwpBH1yw75TFp86M6X15SvaaY/Eep7YySQYtqdOifEtfvVyMwzl7SZ+G4RQw00FD9g5R6i1Q==
+
 tmp@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/tmp/-/tmp-0.2.1.tgz#8457fc3037dcf4719c251367a1af6500ee1ccf14"

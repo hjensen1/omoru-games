@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import React, { createContext, useContext, useMemo } from "react"
+import React, { createContext, useContext, useEffect, useMemo } from "react"
 import { useState } from "react"
 import { useSelector } from "react-redux"
 import { doAddToTeam } from "./cauldron/gameMeta"
@@ -9,6 +9,7 @@ import XIcon from "../images/close.svg?component"
 import { peerId } from "../peerjsMiddleware/peerId"
 import { hostId } from "../peerjsMiddleware/hostId"
 import TurnEnder from "./TurnEnder"
+import textFit from "textfit"
 
 export function MobileGame({ self, startGame, canStartGame }) {
   const [activeTab, setActiveTab] = useState("Overview")
@@ -17,6 +18,8 @@ export function MobileGame({ self, startGame, canStartGame }) {
     <div className="flex flex-col items-center justify-center w-full h-full p-4 pt-12 overflow-auto">
       <MobileGameTabs self={self} activeTab={activeTab} setActiveTab={setActiveTab} />
       <Overview self={self} startGame={startGame} canStartGame={canStartGame} active={activeTab === "Overview"} />
+      <MobileGameBoard self={self} team={0} active={activeTab === "Blue Team"} />
+      <MobileGameBoard self={self} team={1} active={activeTab === "Red Team"} />
       <TurnEnder />
     </div>
   )
@@ -129,7 +132,7 @@ function useGameBoardContext() {
   return useContext(GameBoardContext)
 }
 
-export default function MobileGameBoard({ team, self }) {
+export default function MobileGameBoard({ team, self, active }) {
   const contextData = useMemo(
     () => ({
       team,
@@ -141,8 +144,7 @@ export default function MobileGameBoard({ team, self }) {
 
   return (
     <GameBoardContext.Provider value={contextData}>
-      <div className="space-y-4">
-        <TeamMembers />
+      <div className="w-full space-y-4">
         {self.team != null && (
           <>
             <Words />
@@ -158,24 +160,41 @@ export default function MobileGameBoard({ team, self }) {
   )
 }
 
-const otherTeamWords = ["????", "????", "????", "????"]
+const otherTeamWords = ["ADMINISTRATION", "ADMINISTRATION", "ADMINISTRATION", "ADMINISTRATION"]
 function Words() {
   const { team, self } = useGameBoardContext()
   const words = useSelector((state) => state.words[team])
+
+  const [word1El, setWord1El] = useState(null)
+  const [word2El, setWord2El] = useState(null)
+  const [word3El, setWord3El] = useState(null)
+  const [word4El, setWord4El] = useState(null)
+  const wordEls = [word1El, word2El, word3El, word4El]
+  const wordElSetters = [setWord1El, setWord2El, setWord3El, setWord4El]
+  useEffect(() => {
+    for (const wordEl of wordEls) {
+      if (wordEl) {
+        textFit(wordEl, { minFontSize: 9, maxFontSize: 13 })
+      }
+    }
+  }, wordEls)
+
   const gameStarted = useSelector((state) => !!state.rounds[0][0])
   if (!gameStarted) return null
 
   return (
     <div
       className={clsx(
-        "flex flex-1 divide-x-4 divide-opacity-50 p-0",
+        "flex flex-1 divide-x-4 divide-opacity-50 p-0 -mx-4",
         team === 0 ? "panel-blue divide-blue-900" : "panel-red divide-red-900"
       )}
     >
       {(self.team === team ? words : otherTeamWords).map((word, i) => (
-        <div key={i} className="flex flex-col items-center justify-center w-1/4 py-4">
-          <div className="font-bold text-20">#{i + 1}</div>
-          <div className="font-bold text-gray-400">{word}</div>
+        <div key={i} className="flex flex-col items-center justify-center w-1/4 py-1">
+          <div className="font-bold text-16">#{i + 1}</div>
+          <div className="font-bold text-gray-400 text-12 -mt-1 w-full text-center" ref={wordElSetters[i]}>
+            {word}
+          </div>
         </div>
       ))}
     </div>
