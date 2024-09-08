@@ -16,36 +16,49 @@ export function MobileGame({ self, startGame, canStartGame }) {
   return (
     <div className="flex flex-col items-center justify-center w-full h-full p-4 pt-12 overflow-auto">
       <MobileGameTabs self={self} activeTab={activeTab} setActiveTab={setActiveTab} />
-      <Overview self={self} startGame={startGame} canStartGame={canStartGame} />
+      <Overview self={self} startGame={startGame} canStartGame={canStartGame} active={activeTab === "Overview"} />
       <TurnEnder />
     </div>
   )
 }
 
 function MobileGameTabs({ activeTab, setActiveTab, self }) {
+  const gameStarted = useSelector((state) => !!state.rounds[0][0])
+
+  const blueTeamTab = (
+    <button
+      key="0"
+      className={clsx(
+        "text-13 font-medium text-gray-300 font-medium px-1 py-0.5 rounded border-2",
+        activeTab === "Blue Team" ? "border-gray-600" : "border-transparent"
+      )}
+      onClick={() => gameStarted && setActiveTab("Blue Team")}
+    >
+      {self.team === 0 ? "Your Team" : "Opponents"}
+    </button>
+  )
+  const redTeamTab = (
+    <button
+      key="1"
+      className={clsx(
+        "text-13 font-medium text-gray-300 font-medium px-1 py-0.5 rounded border-2",
+        activeTab === "Red Team" ? "border-gray-600" : "border-transparent"
+      )}
+      onClick={() => gameStarted && setActiveTab("Red Team")}
+    >
+      {self.team === 1 ? "Your Team" : "Opponents"}
+    </button>
+  )
+  const teamTabs = self.team === 0 ? [blueTeamTab, redTeamTab] : [redTeamTab, blueTeamTab]
   return (
     <div className="fixed h-8 w-full top-0 left-0 flex items-center bg-gray-800 border-b border-gray-600 space-x-0.5 px-2">
-      <button
-        className={clsx(
-          "text-13 font-medium text-gray-300 font-medium px-1 py-0.5 rounded border-2",
-          activeTab === "YourTeam" ? "border-gray-600" : "border-transparent"
-        )}
-      >
-        Your Team
-      </button>
-      <button
-        className={clsx(
-          "text-13 font-medium text-gray-300 font-medium px-1 py-0.5 rounded border-2",
-          activeTab === "Opponents" ? "border-gray-600" : "border-transparent"
-        )}
-      >
-        Opponents
-      </button>
+      {teamTabs}
       <button
         className={clsx(
           "text-13 font-medium text-gray-300 font-medium px-1 py-0.5 rounded border-2",
           activeTab === "Overview" ? "border-gray-600" : "border-transparent"
         )}
+        onClick={() => setActiveTab("Overview")}
       >
         Overview
       </button>
@@ -54,9 +67,9 @@ function MobileGameTabs({ activeTab, setActiveTab, self }) {
   )
 }
 
-function Overview({ self, startGame, canStartGame }) {
+function Overview({ self, startGame, canStartGame, active }) {
   return (
-    <div className="w-full h-full flex flex-col items-center space-y-4">
+    <div className={clsx("w-full h-full flex flex-col items-center space-y-4", !active && "hidden")}>
       {hostId === peerId && canStartGame && (
         <button className="btn flex-0 w-32" onClick={startGame}>
           Start Game
@@ -142,50 +155,6 @@ export default function MobileGameBoard({ team, self }) {
         )}
       </div>
     </GameBoardContext.Provider>
-  )
-}
-
-function TeamMembers() {
-  const { team, self } = useGameBoardContext()
-  const players = useSelector((state) => state.players)
-  const teamPlayers = players.filter((player) => player.team === team)
-  const cluegiver = useSelector((state) => state.rounds[team].last?.cluegiver)
-  const score = useSelector((state) => state.score[team])
-  const gameStarted = useSelector((state) => !!state.rounds[0][0])
-
-  return (
-    <div className={clsx("w-[40rem] ", team === 0 ? "panel-blue" : "panel-red")}>
-      <div className="flex justify-between items-center">
-        <div className="mb-1 text-20 font-medium">{team === 0 ? "Blue Team" : "Red Team"}</div>
-        {gameStarted && self.team != null ? (
-          <div className="flex flex-col items-start">
-            <div className="flex-center text-16 opacity-80">
-              <CheckIcon className="fill-current h-5 w-5 p-0.5 mr-1" />
-              Interceptions: <span className="opacity-100 font-bold ml-0.5">{score.interceptions}</span>
-            </div>
-            <div className="flex-center text-16 opacity-80">
-              <XIcon className="fill-current h-5 w-5 mr-1" />
-              Miscommunications: <span className="opacity-100 font-bold ml-0.5">{score.miscommunications}</span>
-            </div>
-          </div>
-        ) : (
-          self.team !== team && (
-            <button className={clsx("btn", team === 1 && "btn-red")} onClick={() => doAddToTeam(peerId, team)}>
-              Join Team
-            </button>
-          )
-        )}
-      </div>
-      <div className="text-16 font-medium mb-2">
-        <span>Members: </span>
-        {teamPlayers.map((player, i) => (
-          <React.Fragment key={i}>
-            {i !== 0 && ", "}
-            <span className={clsx(player.id === cluegiver ? "font-bold" : "opacity-80")}>{player.name}</span>
-          </React.Fragment>
-        ))}
-      </div>
-    </div>
   )
 }
 
