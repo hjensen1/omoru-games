@@ -36,11 +36,15 @@ actions.doIncrementGuess = function incrementGuess(key, index, team) {
 
 actions.doSubmitTheirs = function submitTheirs(team) {
   const round = state.rounds[team].last
+  const guesses = round.theirs
+  if (new Set(guesses).size < 3) return
   round.theirsSubmitted = true
 }
 
 actions.doSubmitOurs = function submitOurs(team) {
   const round = state.rounds[team].last
+  const guesses = round.ours
+  if (new Set(guesses).size < 3) return
   round.oursSubmitted = true
 }
 
