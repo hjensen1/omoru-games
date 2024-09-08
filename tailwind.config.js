@@ -20,6 +20,7 @@ module.exports = {
       8: ["8px", { letterSpacing: "0.02em", lineHeight: "16px" }],
       10: ["10px", { letterSpacing: "0.02em", lineHeight: "16px" }],
       12: ["12px", { letterSpacing: "0.01em", lineHeight: "16px" }],
+      13: ["13px", { letterSpacing: "0.01em", lineHeight: "16px" }],
       14: ["14px", { letterSpacing: "0.01em", lineHeight: "20px" }],
       16: ["16px", { letterSpacing: "0em", lineHeight: "24px" }],
       20: ["20px", { letterSpacing: "-0.02em", lineHeight: "32px" }],
