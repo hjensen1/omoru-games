@@ -272,20 +272,20 @@ function GuessInputs() {
   return (
     <div>
       {isSubmitted ? (
-        <div className="mb-2 ml-1 font-medium text-20 text-gray-300">Guesses submitted!</div>
+        <div className="mb-1 font-medium text-16 text-gray-300 w-full text-center">Guesses submitted!</div>
       ) : disabled ? (
-        <div className="mb-2 ml-1 font-medium text-20 text-gray-300">Your team is guessing your clues...</div>
+        <div className="mb-1 font-medium text-16 text-gray-300 w-full text-center">
+          Your team is guessing your clues...
+        </div>
       ) : (
-        <div className="mb-2 ml-1 font-medium text-20 text-gray-300">
+        <div className="mb-1 font-medium text-16 text-gray-300 w-full text-center">
           Guess {team === self.team ? "your team's" : "the opposing team's"} clues!
         </div>
       )}
-      <div
-        className={clsx("p-4 space-y-2 rounded-none", team === 0 ? "panel-blue" : "panel-red", !isSubmitted && "pb-2")}
-      >
+      <div className={clsx("p-2 space-y-2 rounded-none", team === 0 ? "panel-blue" : "panel-red")}>
         {clues.map((clue, i) => (
-          <div key={i} className="flex items-center">
-            <div className="flex items-center h-7 flex-1 bg-gray-750 px-2 font-medium text-18 text-gray-300 mr-4">
+          <div key={i} className="flex flex-col">
+            <div className="w-full text-center flex-1 bg-gray-800 px-2 py-0 font-medium text-18 text-gray-300 mb-1">
               {clue}
             </div>
             <GuessInput
@@ -315,12 +315,12 @@ function GuessInput({ value, onChange, disabled }) {
 
   return (
     <button
-      className="flex items-center text-left bg-gray-750 px-2 rounded hover:bg-gray-700 active:bg-gray-750"
+      className="flex items-center justify-center w-full bg-gray-750 px-2 rounded hover:bg-gray-700 active:bg-gray-750"
       onClick={onChange}
       disabled={disabled}
     >
-      <div className="font-medium text-18 w-6">#{value}</div>
-      <div className="font-medium text-18 text-gray-400 w-32">{word}</div>
+      <div className="font-medium text-18 w-6 mr-1">#{value}</div>
+      <div className="font-medium text-18 text-gray-400">{word}</div>
     </button>
   )
 }
