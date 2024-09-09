@@ -3,7 +3,7 @@ html {
   @apply bg-gray-800;
 }
 
-html, body, #root {
+html, body, #root, #root>div {
   height: 100%;
   margin: 0;
 }
@@ -41,6 +41,14 @@ button:focus {
 
 .btn-red:active {
   @apply bg-red-700 bg-opacity-70;
+}
+
+.panel-blue-mobile {
+  @apply bg-gray-900 bg-opacity-50 border-opacity-50 p-4 border-y-4 text-blue-500 border-blue-900;
+}
+
+.panel-red-mobile {
+  @apply bg-gray-900 bg-opacity-50 border-opacity-50 p-4 border-y-4 text-red-500 border-red-900;
 }
 
 .panel-blue {
