@@ -99,9 +99,9 @@ export default function JoinGame() {
           <div className="flex justify-center items-center space-x-4">
             <div className="input-container">
               <input
-                className="input"
+                className="input uppercase"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => setName(e.target.value.toUpperCase())}
                 placeholder="Enter 6-digit game ID"
               />
             </div>
