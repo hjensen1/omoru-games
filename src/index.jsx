@@ -6,7 +6,7 @@ window.location.href = `${window.location.origin}/decrypto/${window.location.has
 
 ReactDOM.render(
   <React.StrictMode>
-    <div className="h-screen w-screen text-gray-500">This is the root page.</div>
+    <div className="flex-center h-screen w-screen text-gray-500">This is the root page.</div>
   </React.StrictMode>,
   document.getElementById("root")
 )
